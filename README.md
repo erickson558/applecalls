@@ -4,7 +4,7 @@ AppleCalls es una app de escritorio en Python para Windows que te dice si tu
 equipo esta listo para usar las llamadas de tu iPhone por la ruta soportada:
 `Microsoft Phone Link`.
 
-Version actual: `V0.2.1`
+Version actual: `V0.2.2`
 
 Importante:
 
@@ -18,10 +18,14 @@ Importante:
 
 - Detecta la version de Windows y el build actual.
 - Revisa si `Microsoft Phone Link` esta instalado.
+- Lee el estado local de Phone Link para detectar si la vista de `Llamadas` ya
+  esta expuesta para el iPhone conectado.
 - Enumera adaptadores Bluetooth y cuantos estan activos.
+- Verifica si Windows expone un perfil Bluetooth `Hands-Free` para llamadas.
 - Detecta el perfil de red, el SSID Wi-Fi y las IPs locales de la PC.
 - Ejecuta el diagnostico sin congelar la interfaz.
 - Abre Phone Link usando el ejecutable real instalado antes de recurrir a Store.
+- Abre la vista de `Llamadas` directamente cuando Phone Link ya la publica.
 - Si Phone Link falta o no abre, intenta instalarlo o actualizarlo en silencio con `winget`.
 - Muestra un veredicto claro:
   - `Ruta soportada disponible`
@@ -64,7 +68,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build_exe.ps1
 
 Resultado esperado:
 
-- `AppleCalls-V0.2.1.exe` en la carpeta raiz del proyecto
+- `AppleCalls-V0.2.2.exe` en la carpeta raiz del proyecto
 
 ## Estructura
 
@@ -82,6 +86,7 @@ docs/
 scripts/
   build_exe.ps1
 tests/
+  test_diagnostics.py
   test_logic.py
   test_report_format.py
 ```

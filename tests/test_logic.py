@@ -11,12 +11,17 @@ def make_report(
     build: str = "22631",
     phone_link_installed: bool = True,
     bluetooth_ok: bool = True,
+    hands_free_profile: bool = True,
+    calls_available: bool = True,
 ) -> DiagnosticReport:
     """Builds a deterministic report for logic tests."""
 
     adapters = []
+    call_profiles = []
     if bluetooth_ok:
         adapters.append(BluetoothAdapter(name="MediaTek Bluetooth Adapter", status="OK"))
+        if hands_free_profile:
+            call_profiles.append(BluetoothAdapter(name="iPhone Hands-Free HF", status="OK"))
 
     return DiagnosticReport(
         platform_name="Windows" if is_windows else "Linux",
@@ -25,8 +30,13 @@ def make_report(
         build=build,
         python_version="3.12.10",
         is_windows=is_windows,
-        phone_link=PhoneLinkInfo(installed=phone_link_installed, version="1.0"),
+        phone_link=PhoneLinkInfo(
+            installed=phone_link_installed,
+            version="1.0",
+            calls_uri="ms-phone:calling?startScenarioId=feature_calling" if calls_available else None,
+        ),
         bluetooth_adapters=adapters,
+        bluetooth_call_profiles=call_profiles,
         errors=[],
     )
 
@@ -46,6 +56,14 @@ class EvaluateSupportTests(unittest.TestCase):
         evaluation = evaluate_support(make_report(bluetooth_ok=False))
         self.assertEqual(evaluation.level, "blocked")
 
+    def test_partial_when_hands_free_profile_is_missing(self) -> None:
+        evaluation = evaluate_support(make_report(hands_free_profile=False))
+        self.assertEqual(evaluation.level, "partial")
+
+    def test_partial_when_calls_action_is_missing(self) -> None:
+        evaluation = evaluate_support(make_report(calls_available=False))
+        self.assertEqual(evaluation.level, "partial")
+
     def test_blocked_when_not_windows(self) -> None:
         evaluation = evaluate_support(make_report(is_windows=False))
         self.assertEqual(evaluation.level, "blocked")
@@ -57,4 +75,3 @@ class EvaluateSupportTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

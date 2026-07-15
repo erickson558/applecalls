@@ -34,6 +34,14 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "La integracion puede funcionar, pero primero debes instalar o "
             "actualizar Microsoft Phone Link."
         ),
+        "summary_missing_calling_profile": (
+            "Phone Link esta instalado, pero Windows no expone todavia el "
+            "perfil Bluetooth de manos libres necesario para llamadas."
+        ),
+        "summary_calls_not_exposed": (
+            "Phone Link esta instalado, pero su estado local no expone aun la "
+            "pantalla de llamadas para este iPhone."
+        ),
         "summary_missing_bluetooth": (
             "Sin Bluetooth activo no podras hacer ni recibir llamadas del iPhone "
             "en Windows."
@@ -62,6 +70,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Si quieres una solucion mas independiente, la alternativa real es "
             "desviar llamadas a un numero VoIP o SIP."
         ),
+        "note_calls_button": (
+            "Si el iPhone ya aparece conectado, prueba abrir la vista "
+            "Llamadas directamente desde este diagnostico para validar el flujo real."
+        ),
         "note_same_network_not_enough": (
             "Aunque iPhone y PC esten en la misma red Wi-Fi, Windows no puede "
             "recibir llamadas al estilo Mac porque Apple no publica ese relay "
@@ -77,6 +89,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "refresh": "Ejecutar diagnostico",
         "open_phone_link": "Abrir Phone Link",
+        "open_calls": "Abrir llamadas",
         "install_phone_link": "Instalar o actualizar Phone Link",
         "open_bluetooth": "Abrir Bluetooth",
         "open_ms_guide": "Guia Microsoft",
@@ -126,10 +139,12 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "3. Sigue el asistente para conectar iPhone.\n"
             "4. En el iPhone, permite acceso a Bluetooth y sincronizacion de "
             "contactos.\n"
-            "5. Si tu objetivo es un flujo por Wi-Fi sin Bluetooth, la opcion "
+            "5. Usa el boton Abrir llamadas para ir directo al panel que debe "
+            "permitir contestar o iniciar llamadas.\n"
+            "6. Si tu objetivo es un flujo por Wi-Fi sin Bluetooth, la opcion "
             "real no es Apple Continuity en Windows sino desvio de llamadas a "
             "VoIP/SIP.\n"
-            "6. Si Phone Link falla, actualizalo desde Microsoft Store."
+            "7. Si Phone Link falla, actualizalo desde Microsoft Store."
         ),
         "limitations_text": (
             "- Esto no clona la funcion privada de llamadas de macOS.\n"
@@ -177,6 +192,14 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "The integration can work, but you first need to install or update "
             "Microsoft Phone Link."
         ),
+        "summary_missing_calling_profile": (
+            "Phone Link is installed, but Windows is not exposing the "
+            "hands-free Bluetooth profile required for calls yet."
+        ),
+        "summary_calls_not_exposed": (
+            "Phone Link is installed, but its local runtime state is not yet "
+            "exposing the calls screen for this iPhone."
+        ),
         "summary_missing_bluetooth": (
             "Without active Bluetooth, you will not be able to make or receive "
             "iPhone calls on Windows."
@@ -204,6 +227,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "If you need a more independent desktop solution, the practical "
             "alternative is call forwarding to a VoIP or SIP number."
         ),
+        "note_calls_button": (
+            "If the iPhone already shows as connected, try opening the Calls "
+            "view directly from this diagnostic app to validate the real flow."
+        ),
         "note_same_network_not_enough": (
             "Even if the iPhone and PC are on the same Wi-Fi network, Windows "
             "cannot receive Continuity calls like a Mac because Apple does not "
@@ -219,6 +246,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "refresh": "Run diagnostics",
         "open_phone_link": "Open Phone Link",
+        "open_calls": "Open calls",
         "install_phone_link": "Install or update Phone Link",
         "open_bluetooth": "Open Bluetooth",
         "open_ms_guide": "Microsoft guide",
@@ -267,10 +295,12 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "2. Open Microsoft Phone Link on the PC.\n"
             "3. Follow the assistant to connect your iPhone.\n"
             "4. On the iPhone, allow Bluetooth access and contact sync.\n"
-            "5. If your target is a Wi-Fi-only flow without Bluetooth, the real "
+            "5. Use the Open calls button to jump directly to the panel that "
+            "should allow answering or starting calls.\n"
+            "6. If your target is a Wi-Fi-only flow without Bluetooth, the real "
             "option is call forwarding to VoIP/SIP rather than Apple Continuity "
             "on Windows.\n"
-            "6. If Phone Link fails, update it from Microsoft Store."
+            "7. If Phone Link fails, update it from Microsoft Store."
         ),
         "limitations_text": (
             "- This does not clone the private macOS calling feature.\n"

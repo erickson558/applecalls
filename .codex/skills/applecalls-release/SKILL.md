@@ -23,6 +23,7 @@ or git metadata.
 4. Run the local validation steps before building:
    - `python -m unittest discover -s tests`
    - `python -m compileall .`
+   - Confirm the Phone Link diagnostic still reports calls-entry and hands-free state without crashing
 5. Build the executable with:
    - `powershell -ExecutionPolicy Bypass -File .\scripts\build_exe.ps1`
 6. Summarize the exact commit message, tag, and push commands that match the
@@ -32,9 +33,10 @@ or git metadata.
 
 - Do not claim that AppleCalls reproduces the private Mac Wi-Fi relay on
   Windows.
+- Keep the release flow aligned with the current Phone Link runtime validation,
+  including direct access to the Calls experience when available.
 - Prefer the existing build script instead of hand-written PyInstaller
   commands.
 - If git is not initialized yet, initialize it before preparing commit/tag/push
   steps.
 - If a GitHub remote is missing, create or connect `origin` before pushing.
-

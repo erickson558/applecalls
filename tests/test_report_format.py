@@ -16,8 +16,17 @@ class FormatReportTests(unittest.TestCase):
             build="22631",
             python_version="3.12.10",
             is_windows=True,
-            phone_link=PhoneLinkInfo(installed=True, version="1.0"),
+            phone_link=PhoneLinkInfo(
+                installed=True,
+                version="1.0",
+                connected_device_name="iPhone 14 Pro Max",
+                device_tag="device-ios",
+                calls_uri="ms-phone:calling?startScenarioId=feature_calling",
+                recent_call_titles=["Incoming call from Test"],
+                companion_state_path="C:/Users/Test/StartMenuCompanion.json",
+            ),
             bluetooth_adapters=[BluetoothAdapter(name="Adapter", status="OK")],
+            bluetooth_call_profiles=[BluetoothAdapter(name="iPhone Hands-Free HF", status="OK")],
             network=NetworkInfo(
                 profile_name="OfficeNet",
                 interface_alias="Ethernet",
@@ -34,6 +43,9 @@ class FormatReportTests(unittest.TestCase):
         self.assertIn("Network interface: Ethernet", text)
         self.assertIn("Wi-Fi connected: no", text)
         self.assertIn("Bluetooth adapters active: 1", text)
+        self.assertIn("Phone Link connected device: iPhone 14 Pro Max", text)
+        self.assertIn("Phone Link calls entry available: yes", text)
+        self.assertIn("Bluetooth hands-free profile: yes", text)
 
 
 if __name__ == "__main__":

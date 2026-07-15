@@ -31,6 +31,9 @@ PAYPAL_URL = "https://www.paypal.com/donate/?hosted_button_id=ZABFRXC2P3JQN"
 PHONE_LINK_PRODUCT_ID = "9NMPJ99VJBWV"
 PHONE_LINK_SHELL_TARGET = r"shell:AppsFolder\Microsoft.YourPhone_8wekyb3d8bbwe!App"
 PHONE_LINK_STORE_TARGET = f"ms-windows-store://pdp/?ProductId={PHONE_LINK_PRODUCT_ID}"
+PHONE_LINK_CALLS_TARGET = (
+    "ms-phone:calling?startScenarioId=feature_calling&ref=AppleCalls&scenarioId=feature_calling"
+)
 
 
 class AppleCallsApp(tk.Tk):
@@ -173,23 +176,26 @@ class AppleCallsApp(tk.Tk):
         self.phone_link_button = ttk.Button(actions_frame, command=self.open_phone_link)
         self.phone_link_button.grid(row=1, column=0, sticky="ew", padx=16, pady=8)
 
+        self.phone_link_calls_button = ttk.Button(actions_frame, command=self.open_phone_link_calls)
+        self.phone_link_calls_button.grid(row=2, column=0, sticky="ew", padx=16, pady=8)
+
         self.phone_link_install_button = ttk.Button(actions_frame, command=self.install_or_update_phone_link)
-        self.phone_link_install_button.grid(row=2, column=0, sticky="ew", padx=16, pady=8)
+        self.phone_link_install_button.grid(row=3, column=0, sticky="ew", padx=16, pady=8)
 
         self.bluetooth_button = ttk.Button(actions_frame, command=lambda: self.open_uri("ms-settings:bluetooth"))
-        self.bluetooth_button.grid(row=3, column=0, sticky="ew", padx=16, pady=8)
+        self.bluetooth_button.grid(row=4, column=0, sticky="ew", padx=16, pady=8)
 
         self.ms_button = ttk.Button(actions_frame, command=lambda: webbrowser.open(MICROSOFT_PHONE_LINK_URL))
-        self.ms_button.grid(row=4, column=0, sticky="ew", padx=16, pady=8)
+        self.ms_button.grid(row=5, column=0, sticky="ew", padx=16, pady=8)
 
         self.apple_button = ttk.Button(actions_frame, command=lambda: webbrowser.open(APPLE_CONTINUITY_URL))
-        self.apple_button.grid(row=5, column=0, sticky="ew", padx=16, pady=8)
+        self.apple_button.grid(row=6, column=0, sticky="ew", padx=16, pady=8)
 
         self.copy_button = ttk.Button(actions_frame, command=self.copy_report)
-        self.copy_button.grid(row=6, column=0, sticky="ew", padx=16, pady=8)
+        self.copy_button.grid(row=7, column=0, sticky="ew", padx=16, pady=8)
 
         self.donate_button = ttk.Button(actions_frame, command=lambda: webbrowser.open(PAYPAL_URL))
-        self.donate_button.grid(row=7, column=0, sticky="ew", padx=16, pady=(8, 16))
+        self.donate_button.grid(row=8, column=0, sticky="ew", padx=16, pady=(8, 16))
 
         diagnostic_frame = ttk.LabelFrame(root, style="Section.TLabelframe")
         diagnostic_frame.grid(row=2, column=0, sticky="nsew", padx=(0, 10))
@@ -273,6 +279,7 @@ class AppleCallsApp(tk.Tk):
         self.limitations_frame.configure(text=get_text(language, "limitations_panel"))
         self.refresh_button.configure(text=get_text(language, "refresh"))
         self.phone_link_button.configure(text=get_text(language, "open_phone_link"))
+        self.phone_link_calls_button.configure(text=get_text(language, "open_calls"))
         self.phone_link_install_button.configure(text=get_text(language, "install_phone_link"))
         self.bluetooth_button.configure(text=get_text(language, "open_bluetooth"))
         self.ms_button.configure(text=get_text(language, "open_ms_guide"))
@@ -389,10 +396,30 @@ class AppleCallsApp(tk.Tk):
         if self._open_phone_link_direct():
             return
 
+        phone_link = self._get_current_phone_link_info(prefer_fresh=False)
+        if phone_link.launch_uri and self.open_uri(phone_link.launch_uri):
+            return
+
         if self.open_uri(PHONE_LINK_SHELL_TARGET):
             return
 
         self.install_or_update_phone_link()
+
+    def open_phone_link_calls(self) -> None:
+        """Launches Phone Link directly in the calls experience when available."""
+
+        phone_link = self._get_current_phone_link_info(prefer_fresh=False)
+        if phone_link.calls_uri and self.open_uri(phone_link.calls_uri):
+            return
+
+        phone_link = self._get_current_phone_link_info(prefer_fresh=True)
+        if phone_link.calls_uri and self.open_uri(phone_link.calls_uri):
+            return
+
+        if self.open_uri(PHONE_LINK_CALLS_TARGET):
+            return
+
+        self.open_phone_link()
 
     def _open_phone_link_direct(self) -> bool:
         """Opens the installed Phone Link executable when available.
@@ -431,6 +458,7 @@ class AppleCallsApp(tk.Tk):
 
         self._phone_link_task_running = True
         self.phone_link_button.configure(state="disabled")
+        self.phone_link_calls_button.configure(state="disabled")
         self.phone_link_install_button.configure(state="disabled")
         self.refresh_button.configure(state="disabled")
         self.status_title.set(get_text(self.language.get(), "status_installing"))
@@ -496,6 +524,7 @@ class AppleCallsApp(tk.Tk):
                 status, details = self._phone_link_queue.get_nowait()
                 self._phone_link_task_running = False
                 self.phone_link_button.configure(state="normal")
+                self.phone_link_calls_button.configure(state="normal")
                 self.phone_link_install_button.configure(state="normal")
                 self.refresh_button.configure(state="normal")
                 self.refresh_diagnostics()

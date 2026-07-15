@@ -13,6 +13,7 @@ Suggested skills:
 
 - Read the project spec in `docs/spec-driven-development.md`
 - Preserve current features
+- Validate Phone Link runtime state, not only installation state
 - Prefer patch-level fixes unless scope clearly expands
 - Add comments and docstrings when they improve maintainability
 
@@ -29,6 +30,6 @@ Suggested skills:
 
 - Read version from `applecalls/__init__.py`
 - Use `scripts/build_exe.ps1` for repeatable builds
+- Run tests before rebuilding and pushing
 - Tag the same version that the GUI shows
 - Prefer conventional commits
-
