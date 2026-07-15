@@ -1,0 +1,5 @@
+interface:
+  display_name: "AppleCalls Release"
+  short_description: "Version, build, tag, and push AppleCalls"
+  default_prompt: "Use $applecalls-release to bump Vx.x.x, rebuild the Windows executable, and prepare the matching commit, tag, and push workflow for AppleCalls."
+
