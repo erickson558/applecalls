@@ -4,7 +4,7 @@ AppleCalls es una utilidad de escritorio en Python para Windows que responde una
 pregunta concreta: `esta PC puede usar las llamadas de mi iPhone por la ruta
 soportada, o no?`
 
-Version actual: `V0.2.2`
+Version actual: `V0.2.3`
 
 ## Resumen
 
@@ -27,6 +27,8 @@ El programa existe para:
 - Detecta si la vista de `Llamadas` ya esta expuesta por Phone Link.
 - Enumera adaptadores Bluetooth.
 - Verifica si Windows expone perfiles de llamada como `Hands-Free HF`.
+- Detecta audifonos o endpoints Bluetooth externos que pueden bloquear el popup
+  para contestar llamadas desde Phone Link.
 - Detecta perfil de red, conectividad Wi-Fi, SSID e IPs IPv4 locales.
 - Genera un reporte tecnico copiable.
 - Ejecuta el diagnostico en segundo plano para no congelar la interfaz.
@@ -90,7 +92,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build_exe.ps1
 
 Resultado esperado:
 
-- `AppleCalls-V0.2.2.exe` en la carpeta raiz del proyecto
+- `AppleCalls-V0.2.3.exe` en la carpeta raiz del proyecto
 
 ## Estructura del proyecto
 

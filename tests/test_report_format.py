@@ -26,7 +26,10 @@ class FormatReportTests(unittest.TestCase):
                 companion_state_path="C:/Users/Test/StartMenuCompanion.json",
             ),
             bluetooth_adapters=[BluetoothAdapter(name="Adapter", status="OK")],
-            bluetooth_call_profiles=[BluetoothAdapter(name="iPhone Hands-Free HF", status="OK")],
+            bluetooth_call_profiles=[
+                BluetoothAdapter(name="iPhone Hands-Free HF", status="OK"),
+                BluetoothAdapter(name="Auriculares (SoundPlay ANC)", status="OK", class_name="AudioEndpoint"),
+            ],
             network=NetworkInfo(
                 profile_name="OfficeNet",
                 interface_alias="Ethernet",
@@ -46,6 +49,7 @@ class FormatReportTests(unittest.TestCase):
         self.assertIn("Phone Link connected device: iPhone 14 Pro Max", text)
         self.assertIn("Phone Link calls entry available: yes", text)
         self.assertIn("Bluetooth hands-free profile: yes", text)
+        self.assertIn("External Bluetooth audio blockers: 1", text)
 
 
 if __name__ == "__main__":

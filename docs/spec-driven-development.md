@@ -22,6 +22,7 @@ That makes the following a non-goal:
 - Inspect Windows version, Phone Link, Bluetooth, and local network state
 - Inspect whether Phone Link already exposes its local Calls entry point for the connected iPhone
 - Distinguish generic Bluetooth availability from the hands-free profile required for call control
+- Detect external Bluetooth audio devices that can prevent Phone Link from presenting an answer-call UI
 - Explain the technical limitation clearly
 - Provide a stable GUI that does not freeze during diagnostics
 - Produce a reproducible Windows `.exe`
@@ -39,6 +40,7 @@ That makes the following a non-goal:
 - Running diagnostics keeps the window responsive
 - The report includes Windows, Phone Link, Bluetooth, and network details
 - The report includes whether Phone Link exposes the Calls view and whether a Bluetooth hands-free profile is present
+- The report identifies external Bluetooth audio blockers when they are likely to interfere with incoming-call handling
 - The app explicitly states that same-Wi-Fi alone does not unlock Mac-style calling on Windows
 - The GUI can open Phone Link directly into the Calls experience when Windows exposes that route
 - The project can generate an `.exe` in the project root using the local `.ico`

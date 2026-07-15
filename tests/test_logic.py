@@ -13,6 +13,7 @@ def make_report(
     bluetooth_ok: bool = True,
     hands_free_profile: bool = True,
     calls_available: bool = True,
+    external_bluetooth_audio: bool = False,
 ) -> DiagnosticReport:
     """Builds a deterministic report for logic tests."""
 
@@ -22,6 +23,14 @@ def make_report(
         adapters.append(BluetoothAdapter(name="MediaTek Bluetooth Adapter", status="OK"))
         if hands_free_profile:
             call_profiles.append(BluetoothAdapter(name="iPhone Hands-Free HF", status="OK"))
+        if external_bluetooth_audio:
+            call_profiles.append(
+                BluetoothAdapter(
+                    name="Auriculares (SoundPlay ANC)",
+                    status="OK",
+                    class_name="AudioEndpoint",
+                )
+            )
 
     return DiagnosticReport(
         platform_name="Windows" if is_windows else "Linux",
@@ -58,6 +67,10 @@ class EvaluateSupportTests(unittest.TestCase):
 
     def test_partial_when_hands_free_profile_is_missing(self) -> None:
         evaluation = evaluate_support(make_report(hands_free_profile=False))
+        self.assertEqual(evaluation.level, "partial")
+
+    def test_partial_when_external_bluetooth_audio_is_active(self) -> None:
+        evaluation = evaluate_support(make_report(external_bluetooth_audio=True))
         self.assertEqual(evaluation.level, "partial")
 
     def test_partial_when_calls_action_is_missing(self) -> None:

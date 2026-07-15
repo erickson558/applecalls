@@ -19,6 +19,7 @@ class BluetoothAdapter:
 
     name: str
     status: str
+    class_name: str | None = None
 
 
 @dataclass(slots=True)
@@ -104,6 +105,30 @@ class DiagnosticReport:
             adapter.status.upper() == "OK" and any(marker in adapter.name.lower() for marker in markers)
             for adapter in self.bluetooth_call_profiles
         )
+
+    @property
+    def active_bluetooth_audio_blockers(self) -> list[BluetoothAdapter]:
+        """Returns non-iPhone Bluetooth audio devices that may block Phone Link calls."""
+
+        blockers: list[BluetoothAdapter] = []
+        seen_names: set[str] = set()
+        audio_markers = ("hands-free", "hands free", "headset", "headphones", "auriculares", "a2dp", "avrcp")
+
+        for adapter in self.bluetooth_call_profiles:
+            name = adapter.name.strip()
+            name_lower = name.lower()
+            class_name = (adapter.class_name or "").strip()
+
+            if adapter.status.upper() != "OK":
+                continue
+            if "iphone" in name_lower or name in seen_names:
+                continue
+
+            if class_name == "AudioEndpoint" or any(marker in name_lower for marker in audio_markers):
+                blockers.append(adapter)
+                seen_names.add(name)
+
+        return blockers
 
 
 def _run_powershell(script: str) -> subprocess.CompletedProcess[str]:
@@ -316,7 +341,7 @@ def _get_bluetooth_adapters(errors: list[str]) -> list[BluetoothAdapter]:
 
     script = (
         "Get-PnpDevice -Class Bluetooth "
-        "| Select-Object Status, FriendlyName "
+        "| Select-Object Class, Status, FriendlyName "
         "| ConvertTo-Json -Compress"
     )
     data, error = _run_powershell_json(script)
@@ -331,6 +356,7 @@ def _get_bluetooth_adapters(errors: list[str]) -> list[BluetoothAdapter]:
             BluetoothAdapter(
                 name=str(item.get("FriendlyName") or "Unknown device"),
                 status=str(item.get("Status") or "Unknown"),
+                class_name=str(item.get("Class")) if item.get("Class") else None,
             )
         )
 
@@ -338,14 +364,18 @@ def _get_bluetooth_adapters(errors: list[str]) -> list[BluetoothAdapter]:
 
 
 def _get_bluetooth_call_profiles(errors: list[str]) -> list[BluetoothAdapter]:
-    """Collects Bluetooth-linked devices that matter for iPhone calling."""
+    """Collects Bluetooth-linked devices that matter for calling diagnostics.
+
+    This includes the iPhone calling profiles themselves and external Bluetooth
+    audio devices that may block Phone Link from presenting an answer-call UI.
+    """
 
     script = (
         "Get-PnpDevice "
         "| Where-Object { "
-        "$_.FriendlyName -match 'iPhone|Apple|Hands-Free HF|HF Audio|A2DP|MAP MAS|Wireless iAP|Phonebook Access' "
+        "$_.FriendlyName -match 'iPhone|Apple|Hands-Free|HF Audio|A2DP|MAP MAS|Wireless iAP|Phonebook Access|AVRCP|AirPods|Buds|Headphones|Headset|Auriculares|soundcore|SoundPlay|Bose|Sony|Beats|JBL' "
         "} "
-        "| Select-Object Status, FriendlyName "
+        "| Select-Object Class, Status, FriendlyName "
         "| ConvertTo-Json -Compress"
     )
     data, error = _run_powershell_json(script)
@@ -367,6 +397,7 @@ def _get_bluetooth_call_profiles(errors: list[str]) -> list[BluetoothAdapter]:
             BluetoothAdapter(
                 name=name,
                 status=str(item.get("Status") or "Unknown"),
+                class_name=str(item.get("Class")) if item.get("Class") else None,
             )
         )
 

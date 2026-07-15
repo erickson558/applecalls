@@ -80,6 +80,18 @@ def evaluate_support(report: DiagnosticReport) -> SupportEvaluation:
             ],
         )
 
+    if report.active_bluetooth_audio_blockers:
+        return SupportEvaluation(
+            level="partial",
+            title_key="status_partial",
+            summary_key="summary_external_bluetooth_audio",
+            note_keys=[
+                "note_disconnect_bt_headset",
+                "note_calls_button",
+                "note_same_network_not_enough",
+            ],
+        )
+
     if not report.has_hands_free_profile:
         return SupportEvaluation(
             level="partial",
@@ -129,11 +141,17 @@ def format_report(report: DiagnosticReport) -> str:
         f"- {adapter.name} [{adapter.status}]"
         for adapter in report.bluetooth_call_profiles
     ]
+    bluetooth_audio_blocker_lines = [
+        f"- {adapter.name} [{adapter.status}]"
+        for adapter in report.active_bluetooth_audio_blockers
+    ]
 
     if not bluetooth_lines:
         bluetooth_lines = ["- No Bluetooth adapters detected."]
     if not bluetooth_call_profile_lines:
         bluetooth_call_profile_lines = ["- No Bluetooth call profiles detected."]
+    if not bluetooth_audio_blocker_lines:
+        bluetooth_audio_blocker_lines = ["- No external Bluetooth audio blockers detected."]
 
     error_lines = report.errors or ["- No diagnostic errors."]
 
@@ -151,6 +169,7 @@ def format_report(report: DiagnosticReport) -> str:
     wifi_ssid = report.network.wifi_ssid or "n/a"
     ipv4_addresses = ", ".join(report.network.ipv4_addresses) or "n/a"
     hands_free_profile = "yes" if report.has_hands_free_profile else "no"
+    bluetooth_audio_blockers = str(len(report.active_bluetooth_audio_blockers))
     recent_call_preview = " | ".join(report.phone_link.recent_call_titles[:3]) or "n/a"
 
     lines = [
@@ -183,6 +202,9 @@ def format_report(report: DiagnosticReport) -> str:
         "",
         f"Bluetooth call profiles detected: {len(report.bluetooth_call_profiles)}",
         *bluetooth_call_profile_lines,
+        "",
+        f"External Bluetooth audio blockers: {bluetooth_audio_blockers}",
+        *bluetooth_audio_blocker_lines,
         "",
         f"Recent call preview: {recent_call_preview}",
         "",

@@ -34,6 +34,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "La integracion puede funcionar, pero primero debes instalar o "
             "actualizar Microsoft Phone Link."
         ),
+        "summary_external_bluetooth_audio": (
+            "Phone Link esta conectado, pero Windows aun detecta audio Bluetooth "
+            "externo en la PC y eso puede bloquear el popup para contestar llamadas."
+        ),
         "summary_missing_calling_profile": (
             "Phone Link esta instalado, pero Windows no expone todavia el "
             "perfil Bluetooth de manos libres necesario para llamadas."
@@ -73,6 +77,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "note_calls_button": (
             "Si el iPhone ya aparece conectado, prueba abrir la vista "
             "Llamadas directamente desde este diagnostico para validar el flujo real."
+        ),
+        "note_disconnect_bt_headset": (
+            "Desconecta o apaga en la PC cualquier audifono o headset Bluetooth "
+            "externo y deja como audio de comunicaciones los altavoces y microfono locales."
         ),
         "note_same_network_not_enough": (
             "Aunque iPhone y PC esten en la misma red Wi-Fi, Windows no puede "
@@ -192,6 +200,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "The integration can work, but you first need to install or update "
             "Microsoft Phone Link."
         ),
+        "summary_external_bluetooth_audio": (
+            "Phone Link is connected, but Windows still detects external "
+            "Bluetooth audio on the PC and that can block the incoming-call answer popup."
+        ),
         "summary_missing_calling_profile": (
             "Phone Link is installed, but Windows is not exposing the "
             "hands-free Bluetooth profile required for calls yet."
@@ -230,6 +242,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "note_calls_button": (
             "If the iPhone already shows as connected, try opening the Calls "
             "view directly from this diagnostic app to validate the real flow."
+        ),
+        "note_disconnect_bt_headset": (
+            "Disconnect or power off any external Bluetooth headset on the PC and "
+            "leave local speakers and microphone as the communications audio path."
         ),
         "note_same_network_not_enough": (
             "Even if the iPhone and PC are on the same Wi-Fi network, Windows "
