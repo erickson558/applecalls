@@ -12,7 +12,13 @@ from tkinter import messagebox, ttk
 import webbrowser
 
 from applecalls import __version__
-from applecalls.diagnostics import DiagnosticReport, build_fallback_report, collect_report
+from applecalls.diagnostics import (
+    DiagnosticReport,
+    PhoneLinkInfo,
+    build_fallback_report,
+    collect_phone_link_info,
+    collect_report,
+)
 from applecalls.i18n import get_text
 from applecalls.logic import SupportEvaluation, evaluate_support, format_report
 
@@ -22,6 +28,9 @@ MICROSOFT_PHONE_LINK_URL = (
 )
 APPLE_CONTINUITY_URL = "https://support.apple.com/en-us/102405"
 PAYPAL_URL = "https://www.paypal.com/donate/?hosted_button_id=ZABFRXC2P3JQN"
+PHONE_LINK_PRODUCT_ID = "9NMPJ99VJBWV"
+PHONE_LINK_SHELL_TARGET = r"shell:AppsFolder\Microsoft.YourPhone_8wekyb3d8bbwe!App"
+PHONE_LINK_STORE_TARGET = f"ms-windows-store://pdp/?ProductId={PHONE_LINK_PRODUCT_ID}"
 
 
 class AppleCallsApp(tk.Tk):
@@ -34,7 +43,10 @@ class AppleCallsApp(tk.Tk):
         self.status_title = tk.StringVar()
         self.status_summary = tk.StringVar()
         self._diagnostic_queue: queue.Queue[tuple[int, DiagnosticReport, SupportEvaluation]] = queue.Queue()
+        self._phone_link_queue: queue.Queue[tuple[str, str]] = queue.Queue()
         self._diagnostic_request_id = 0
+        self._phone_link_task_running = False
+        self.latest_report: DiagnosticReport | None = None
 
         self.base_dir = Path(__file__).resolve().parent.parent
         self.icon_path = self.base_dir / "iphone_apple_mac_171.ico"
@@ -43,6 +55,7 @@ class AppleCallsApp(tk.Tk):
         self._configure_styles()
         self._build_ui()
         self.after(120, self._poll_diagnostic_queue)
+        self.after(160, self._poll_phone_link_queue)
         self.refresh_ui()
 
     def _configure_root(self) -> None:
@@ -160,20 +173,23 @@ class AppleCallsApp(tk.Tk):
         self.phone_link_button = ttk.Button(actions_frame, command=self.open_phone_link)
         self.phone_link_button.grid(row=1, column=0, sticky="ew", padx=16, pady=8)
 
+        self.phone_link_install_button = ttk.Button(actions_frame, command=self.install_or_update_phone_link)
+        self.phone_link_install_button.grid(row=2, column=0, sticky="ew", padx=16, pady=8)
+
         self.bluetooth_button = ttk.Button(actions_frame, command=lambda: self.open_uri("ms-settings:bluetooth"))
-        self.bluetooth_button.grid(row=2, column=0, sticky="ew", padx=16, pady=8)
+        self.bluetooth_button.grid(row=3, column=0, sticky="ew", padx=16, pady=8)
 
         self.ms_button = ttk.Button(actions_frame, command=lambda: webbrowser.open(MICROSOFT_PHONE_LINK_URL))
-        self.ms_button.grid(row=3, column=0, sticky="ew", padx=16, pady=8)
+        self.ms_button.grid(row=4, column=0, sticky="ew", padx=16, pady=8)
 
         self.apple_button = ttk.Button(actions_frame, command=lambda: webbrowser.open(APPLE_CONTINUITY_URL))
-        self.apple_button.grid(row=4, column=0, sticky="ew", padx=16, pady=8)
+        self.apple_button.grid(row=5, column=0, sticky="ew", padx=16, pady=8)
 
         self.copy_button = ttk.Button(actions_frame, command=self.copy_report)
-        self.copy_button.grid(row=5, column=0, sticky="ew", padx=16, pady=8)
+        self.copy_button.grid(row=6, column=0, sticky="ew", padx=16, pady=8)
 
         self.donate_button = ttk.Button(actions_frame, command=lambda: webbrowser.open(PAYPAL_URL))
-        self.donate_button.grid(row=6, column=0, sticky="ew", padx=16, pady=(8, 16))
+        self.donate_button.grid(row=7, column=0, sticky="ew", padx=16, pady=(8, 16))
 
         diagnostic_frame = ttk.LabelFrame(root, style="Section.TLabelframe")
         diagnostic_frame.grid(row=2, column=0, sticky="nsew", padx=(0, 10))
@@ -257,6 +273,7 @@ class AppleCallsApp(tk.Tk):
         self.limitations_frame.configure(text=get_text(language, "limitations_panel"))
         self.refresh_button.configure(text=get_text(language, "refresh"))
         self.phone_link_button.configure(text=get_text(language, "open_phone_link"))
+        self.phone_link_install_button.configure(text=get_text(language, "install_phone_link"))
         self.bluetooth_button.configure(text=get_text(language, "open_bluetooth"))
         self.ms_button.configure(text=get_text(language, "open_ms_guide"))
         self.apple_button.configure(text=get_text(language, "open_apple_guide"))
@@ -321,6 +338,7 @@ class AppleCallsApp(tk.Tk):
 
         language = self.language.get()
         self.refresh_button.configure(state="normal")
+        self.latest_report = report
         self.status_title.set(get_text(language, evaluation.title_key))
         self.status_summary.set(get_text(language, evaluation.summary_key))
 
@@ -368,17 +386,146 @@ class AppleCallsApp(tk.Tk):
     def open_phone_link(self) -> None:
         """Launches Phone Link if possible."""
 
-        if self.open_uri("ms-phone-link:"):
+        if self._open_phone_link_direct():
             return
 
-        # Fallback to the AppX shell entry if the URI scheme is not registered.
-        if self.open_uri(r"shell:AppsFolder\Microsoft.YourPhone_8wekyb3d8bbwe!App"):
+        if self.open_uri(PHONE_LINK_SHELL_TARGET):
             return
 
-        messagebox.showerror(
-            get_text(self.language.get(), "error_title"),
-            get_text(self.language.get(), "phone_link_missing"),
-        )
+        self.install_or_update_phone_link()
+
+    def _open_phone_link_direct(self) -> bool:
+        """Opens the installed Phone Link executable when available.
+
+        The `ms-phone-link:` URI may resolve to a Store search instead of
+        launching the app. Using the installed stub executable is more reliable
+        on systems where the URI association is broken.
+        """
+
+        phone_link = self._get_current_phone_link_info(prefer_fresh=False)
+        if phone_link.stub_executable and self.open_uri(phone_link.stub_executable):
+            return True
+
+        phone_link = self._get_current_phone_link_info(prefer_fresh=True)
+        if phone_link.stub_executable and self.open_uri(phone_link.stub_executable):
+            return True
+
+        return False
+
+    def _get_current_phone_link_info(self, *, prefer_fresh: bool) -> PhoneLinkInfo:
+        """Returns Phone Link metadata, using a live lookup when requested."""
+
+        if not prefer_fresh and self.latest_report is not None:
+            return self.latest_report.phone_link
+        return collect_phone_link_info()
+
+    def install_or_update_phone_link(self) -> None:
+        """Installs or updates Phone Link silently with winget."""
+
+        if self._phone_link_task_running:
+            messagebox.showinfo(
+                get_text(self.language.get(), "install_title"),
+                get_text(self.language.get(), "install_in_progress"),
+            )
+            return
+
+        self._phone_link_task_running = True
+        self.phone_link_button.configure(state="disabled")
+        self.phone_link_install_button.configure(state="disabled")
+        self.refresh_button.configure(state="disabled")
+        self.status_title.set(get_text(self.language.get(), "status_installing"))
+        self.status_summary.set(get_text(self.language.get(), "summary_installing"))
+        self._set_text_widget(self.notes_value, get_text(self.language.get(), "installing_notes"))
+        self._set_text_widget(self.report_box, get_text(self.language.get(), "installing_report"))
+        self._apply_status_color("partial")
+
+        worker = threading.Thread(target=self._install_phone_link_worker, daemon=True)
+        worker.start()
+
+    def _install_phone_link_worker(self) -> None:
+        """Runs the silent winget flow and reports the outcome back to the UI."""
+
+        phone_link = collect_phone_link_info()
+        command = [
+            "winget",
+            "upgrade" if phone_link.installed else "install",
+            "--id",
+            PHONE_LINK_PRODUCT_ID,
+            "--source",
+            "msstore",
+            "--accept-package-agreements",
+            "--accept-source-agreements",
+            "--silent",
+            "--disable-interactivity",
+        ]
+
+        try:
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                check=False,
+            )
+            refreshed_phone_link = collect_phone_link_info()
+            details = (result.stdout.strip() or result.stderr.strip() or "No output.").strip()
+
+            if not refreshed_phone_link.installed:
+                self._phone_link_queue.put(("install_failed", details))
+                return
+
+            if refreshed_phone_link.stub_executable or result.returncode == 0:
+                self._phone_link_queue.put(("installed", details))
+                return
+
+            self._phone_link_queue.put(
+                (
+                    "launcher_missing",
+                    f"{details}\n\n{get_text('en', 'launcher_not_ready')}",
+                )
+            )
+        except Exception as exc:  # pragma: no cover - defensive worker fallback
+            self._phone_link_queue.put(("install_failed", str(exc)))
+
+    def _poll_phone_link_queue(self) -> None:
+        """Applies silent-install results on the Tkinter thread."""
+
+        try:
+            while True:
+                status, details = self._phone_link_queue.get_nowait()
+                self._phone_link_task_running = False
+                self.phone_link_button.configure(state="normal")
+                self.phone_link_install_button.configure(state="normal")
+                self.refresh_button.configure(state="normal")
+                self.refresh_diagnostics()
+
+                if status == "installed":
+                    opened = self._open_phone_link_direct() or self.open_uri(PHONE_LINK_SHELL_TARGET)
+                    message_key = "install_success" if opened else "open_after_install_failed"
+                    messagebox.showinfo(
+                        get_text(self.language.get(), "install_title"),
+                        f"{get_text(self.language.get(), message_key)}\n\n"
+                        f"{get_text(self.language.get(), 'install_details')}: {details}",
+                    )
+                elif status == "launcher_missing":
+                    self.open_uri(PHONE_LINK_STORE_TARGET)
+                    messagebox.showerror(
+                        get_text(self.language.get(), "install_title"),
+                        f"{get_text(self.language.get(), 'open_after_install_failed')}\n\n"
+                        f"{get_text(self.language.get(), 'install_details')}: {details}",
+                    )
+                else:
+                    self.open_uri(PHONE_LINK_STORE_TARGET)
+                    messagebox.showerror(
+                        get_text(self.language.get(), "install_title"),
+                        f"{get_text(self.language.get(), 'install_failed')}\n\n"
+                        f"{get_text(self.language.get(), 'install_details')}: {details}",
+                    )
+        except queue.Empty:
+            pass
+
+        self.after(160, self._poll_phone_link_queue)
 
     def open_uri(self, target: str) -> bool:
         """Opens a Windows URI or shell target with best-effort fallbacks."""

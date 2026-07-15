@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import json
+from pathlib import Path
 import platform
 import re
 import subprocess
@@ -26,6 +27,17 @@ class PhoneLinkInfo:
     installed: bool
     version: str | None = None
     package_name: str | None = None
+    install_location: str | None = None
+
+    @property
+    def stub_executable(self) -> str | None:
+        """Returns the direct launcher executable when the package is installed."""
+
+        if not self.install_location:
+            return None
+
+        stub_path = Path(self.install_location) / "YourPhoneStub.exe"
+        return str(stub_path) if stub_path.exists() else None
 
 
 @dataclass(slots=True)
@@ -113,7 +125,7 @@ def _get_phone_link_info(errors: list[str]) -> PhoneLinkInfo:
 
     script = (
         "Get-AppxPackage -Name Microsoft.YourPhone "
-        "| Select-Object Name, PackageFullName, Version "
+        "| Select-Object Name, PackageFullName, Version, InstallLocation "
         "| ConvertTo-Json -Compress"
     )
     data, error = _run_powershell_json(script)
@@ -128,7 +140,18 @@ def _get_phone_link_info(errors: list[str]) -> PhoneLinkInfo:
         installed=True,
         version=str(data.get("Version")) if data.get("Version") else None,
         package_name=data.get("PackageFullName"),
+        install_location=str(data.get("InstallLocation")) if data.get("InstallLocation") else None,
     )
+
+
+def collect_phone_link_info() -> PhoneLinkInfo:
+    """Collects Phone Link data without building the full diagnostic report."""
+
+    if platform.system().lower() != "windows":
+        return PhoneLinkInfo(installed=False)
+
+    errors: list[str] = []
+    return _get_phone_link_info(errors)
 
 
 def _normalize_items(data: Any) -> list[dict[str, Any]]:

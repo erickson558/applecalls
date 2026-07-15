@@ -13,12 +13,17 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "language": "Idioma",
         "status_loading": "Ejecutando diagnostico",
+        "status_installing": "Preparando Phone Link",
         "status_ready": "Ruta soportada disponible",
         "status_partial": "Posible, pero falta configuracion",
         "status_blocked": "No esta listo",
         "summary_loading": (
             "Comprobando Windows, Phone Link, Bluetooth y red. La interfaz sigue "
             "respondiendo mientras termina el diagnostico."
+        ),
+        "summary_installing": (
+            "Intentando abrir o reparar Phone Link sin mostrar el instalador "
+            "interactivo."
         ),
         "summary_ready": (
             "Tu equipo cumple con lo basico para usar llamadas del iPhone en "
@@ -72,6 +77,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "refresh": "Ejecutar diagnostico",
         "open_phone_link": "Abrir Phone Link",
+        "install_phone_link": "Instalar o actualizar Phone Link",
         "open_bluetooth": "Abrir Bluetooth",
         "open_ms_guide": "Guia Microsoft",
         "open_apple_guide": "Guia Apple",
@@ -84,12 +90,35 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "copied_title": "Reporte copiado",
         "copied_message": "El reporte fue copiado al portapapeles.",
         "error_title": "No se pudo completar la accion",
+        "install_title": "Instalacion de Phone Link",
+        "install_success": (
+            "Phone Link quedo disponible. La app intentara abrirse ahora."
+        ),
+        "install_in_progress": (
+            "La instalacion o actualizacion de Phone Link ya esta en curso."
+        ),
+        "install_failed": (
+            "No se pudo instalar o actualizar Phone Link automaticamente."
+        ),
+        "open_after_install_failed": (
+            "Phone Link quedo instalado o actualizado, pero no se pudo abrir automaticamente."
+        ),
+        "launcher_not_ready": (
+            "El lanzador directo de Phone Link todavia no esta disponible."
+        ),
+        "install_details": "Detalle tecnico",
         "loading_notes": (
             "- Consultando version de Windows.\n\n"
             "- Revisando Phone Link.\n\n"
             "- Enumerando Bluetooth y red."
         ),
+        "installing_notes": (
+            "- Intentando abrir el ejecutable real de Phone Link.\n\n"
+            "- Si falla, se ejecuta winget en modo silencioso.\n\n"
+            "- Al terminar, se vuelve a comprobar la instalacion."
+        ),
         "loading_report": "Generando reporte tecnico...",
+        "installing_report": "Trabajando con Phone Link...",
         "guide_text": (
             "1. Si quieres la ruta soportada en Windows, empareja el iPhone con "
             "la PC por Bluetooth.\n"
@@ -127,12 +156,17 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "language": "Language",
         "status_loading": "Running diagnostics",
+        "status_installing": "Preparing Phone Link",
         "status_ready": "Supported path available",
         "status_partial": "Possible, but setup is incomplete",
         "status_blocked": "Not ready",
         "summary_loading": (
             "Checking Windows, Phone Link, Bluetooth, and network status. The UI "
             "stays responsive while diagnostics are running."
+        ),
+        "summary_installing": (
+            "Trying to open or repair Phone Link without showing the interactive "
+            "installer."
         ),
         "summary_ready": (
             "Your system meets the basic requirements to use iPhone calls on "
@@ -185,6 +219,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "refresh": "Run diagnostics",
         "open_phone_link": "Open Phone Link",
+        "install_phone_link": "Install or update Phone Link",
         "open_bluetooth": "Open Bluetooth",
         "open_ms_guide": "Microsoft guide",
         "open_apple_guide": "Apple guide",
@@ -197,12 +232,35 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "copied_title": "Report copied",
         "copied_message": "The report was copied to the clipboard.",
         "error_title": "The action could not be completed",
+        "install_title": "Phone Link installation",
+        "install_success": (
+            "Phone Link is now available. The app will try to open it now."
+        ),
+        "install_in_progress": (
+            "The Phone Link installation or upgrade is already running."
+        ),
+        "install_failed": (
+            "Phone Link could not be installed or upgraded automatically."
+        ),
+        "open_after_install_failed": (
+            "Phone Link was installed or updated, but it could not be opened automatically."
+        ),
+        "launcher_not_ready": (
+            "The direct Phone Link launcher is not available yet."
+        ),
+        "install_details": "Technical details",
         "loading_notes": (
             "- Checking the Windows version.\n\n"
             "- Inspecting Phone Link.\n\n"
             "- Enumerating Bluetooth and network state."
         ),
+        "installing_notes": (
+            "- Trying the real Phone Link launcher first.\n\n"
+            "- If that fails, winget runs in silent mode.\n\n"
+            "- When it finishes, the app checks installation state again."
+        ),
         "loading_report": "Generating technical report...",
+        "installing_report": "Working on Phone Link...",
         "guide_text": (
             "1. If you want the supported Windows path, pair the iPhone with the "
             "PC over Bluetooth.\n"
