@@ -81,6 +81,7 @@ scripts/
   build_exe.ps1
 tests/
   test_logic.py
+  test_report_format.py
 ```
 
 ## Pruebas
@@ -93,4 +94,4 @@ python -m unittest discover -s tests
 
 - Microsoft: https://support.microsoft.com/en-us/windows/apps/make-and-receive-phone-calls-from-your-pc
 - Microsoft: https://support.microsoft.com/en-us/windows/apps/phonelink/setting-up-calls-in-the-phone-link
-- Apple: https://support.apple.com/en-us/108046
+- Apple: https://support.apple.com/en-us/102405
