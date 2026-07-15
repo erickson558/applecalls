@@ -21,6 +21,7 @@ from applecalls.diagnostics import (
 )
 from applecalls.i18n import get_text
 from applecalls.logic import SupportEvaluation, evaluate_support, format_report
+from applecalls.process_utils import merge_hidden_process_kwargs
 
 
 MICROSOFT_PHONE_LINK_URL = (
@@ -495,6 +496,7 @@ class AppleCallsApp(tk.Tk):
                 encoding="utf-8",
                 errors="replace",
                 check=False,
+                **merge_hidden_process_kwargs(),
             )
             refreshed_phone_link = collect_phone_link_info()
             details = (result.stdout.strip() or result.stderr.strip() or "No output.").strip()

@@ -31,6 +31,7 @@ That makes the following a non-goal:
 
 - Keep current features working
 - Avoid blocking the GUI thread with shell diagnostics
+- Keep PowerShell, netsh, and winget helpers silent when launched from the GUI
 - Fail gracefully when PowerShell or netsh commands return incomplete data
 - Keep version strings aligned between source, README, build artifact, tag, and commit
 
@@ -43,4 +44,5 @@ That makes the following a non-goal:
 - The report identifies external Bluetooth audio blockers when they are likely to interfere with incoming-call handling
 - The app explicitly states that same-Wi-Fi alone does not unlock Mac-style calling on Windows
 - The GUI can open Phone Link directly into the Calls experience when Windows exposes that route
+- Background shell helpers do not flash visible CMD or PowerShell windows
 - The project can generate an `.exe` in the project root using the local `.ico`

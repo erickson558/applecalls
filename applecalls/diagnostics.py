@@ -12,6 +12,8 @@ import subprocess
 import sys
 from typing import Any
 
+from applecalls.process_utils import merge_hidden_process_kwargs
+
 
 @dataclass(slots=True)
 class BluetoothAdapter:
@@ -141,6 +143,7 @@ def _run_powershell(script: str) -> subprocess.CompletedProcess[str]:
         encoding="utf-8",
         errors="replace",
         check=False,
+        **merge_hidden_process_kwargs(),
     )
 
 
@@ -154,6 +157,7 @@ def _run_command(command: list[str]) -> subprocess.CompletedProcess[str]:
         encoding="utf-8",
         errors="replace",
         check=False,
+        **merge_hidden_process_kwargs(),
     )
 
 
