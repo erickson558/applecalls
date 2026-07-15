@@ -1,5 +1,4 @@
 interface:
   display_name: "AppleCalls Release"
-  short_description: "Version, build, tag, and push AppleCalls"
-  default_prompt: "Use $applecalls-release to bump Vx.x.x, rebuild the Windows executable, and prepare the matching commit, tag, and push workflow for AppleCalls."
-
+  short_description: "Version, build, and safe GitHub publish"
+  default_prompt: "Use $applecalls-release to verify the active GitHub account is erickson558, align Vx.x.x, rebuild AppleCalls, and prepare the matching commit, tag, and push workflow."

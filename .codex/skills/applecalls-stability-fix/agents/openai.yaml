@@ -1,0 +1,4 @@
+interface:
+  display_name: "AppleCalls Stability Fix"
+  short_description: "Root-cause bugfix and release workflow"
+  default_prompt: "Use $applecalls-stability-fix to analyze AppleCalls bugs, preserve current behavior, validate fixes, align Vx.x.x, and stop any push unless erickson558 is the active GitHub account."

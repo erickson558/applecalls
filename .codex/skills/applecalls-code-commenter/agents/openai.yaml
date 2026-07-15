@@ -1,4 +1,4 @@
 interface:
   display_name: "AppleCalls Commenter"
-  short_description: "Keep AppleCalls code commented and readable"
-  default_prompt: "Use $applecalls-code-commenter to update AppleCalls Python files with clear docstrings, focused comments, and compatibility-safe edits."
+  short_description: "Explain each important code section"
+  default_prompt: "Use $applecalls-code-commenter to document each important AppleCalls code section with clear docstrings, focused comments, and compatibility-safe edits."
