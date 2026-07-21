@@ -1,6 +1,6 @@
 # Automation dependencies used for build and validation tasks.
 pyinstaller>=6.11,<7
-pyyaml>=6.0,<7
+pyyaml>=6.0.3,<7
 
 # Runtime dependencies for the SIP/VoIP softphone feature (see
 # docs/dependencies.md for the rationale behind each one).
