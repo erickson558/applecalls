@@ -31,13 +31,24 @@ or git metadata.
    - Confirm the Phone Link diagnostic still reports calls-entry and hands-free state without crashing
 7. Build the executable with:
    - `powershell -ExecutionPolicy Bypass -File .\scripts\build_exe.ps1`
+   - Then actually launch the built `.exe` (a few seconds is enough) and
+     confirm the main "AppleCalls" window appears, since `pyVoIP`,
+     `sounddevice`, and `keyring` are runtime dependencies now and a clean
+     `compileall`/unit-test pass does not prove PyInstaller bundled them
+     correctly (known gotchas: `keyring`'s dynamic backend resolution,
+     `sounddevice`'s bundled PortAudio DLL).
 8. Summarize the exact commit message, tag, and push commands that match the
    selected version.
 
 ## Constraints
 
-- Do not claim that AppleCalls reproduces the private Mac Wi-Fi relay on
-  Windows.
+- Do not claim that AppleCalls reproduces the private Mac Wi-Fi relay
+  (Continuity Calls) on Windows, and do not claim it uses Bluetooth
+  Hands-Free/ANCS to bypass Phone Link -- both were investigated and
+  confirmed infeasible on real hardware (see the "Investigation history"
+  section of `docs/spec-driven-development.md`). The SIP/VoIP softphone in
+  `applecalls/voip.py` is the real, independent mechanism; describe it as
+  exactly that, not as an Apple/Microsoft feature clone.
 - Keep the release flow aligned with the current Phone Link runtime validation,
   including direct access to the Calls experience when available.
 - Do not reuse a stale or wrong GitHub remote. The previous incorrect account

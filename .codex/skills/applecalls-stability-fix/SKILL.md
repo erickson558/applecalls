@@ -50,7 +50,22 @@ active GitHub account is `erickson558`.
   - `python -m compileall .`
 - If the change affects packaging, rebuild with:
   - `powershell -ExecutionPolicy Bypass -File .\scripts\build_exe.ps1`
+  - Then actually launch the produced `.exe` and confirm the main window
+    appears before declaring the build good -- `compileall`/unit tests run
+    against source, not the frozen bundle, and `pyVoIP`/`sounddevice`/
+    `keyring` have known PyInstaller bundling gotchas (dynamic backend
+    resolution, bundled native DLLs) that only a real frozen run catches.
 - If the change affects Phone Link logic, confirm the diagnostics still report the calls entry and calling profiles without crashing.
+- If the change affects `applecalls/voip.py` or the SIP GUI panel, confirm:
+  - no new blocking call was added to a Tk button/close handler (SIP
+    registration, firewall rule setup, and `phone.start()`/`phone.stop()`
+    must run on a background thread, reported back through
+    `SipPhoneController.events` + `self.after(...)`, exactly like the
+    existing diagnostics queue pattern)
+  - a second incoming call while one is active is still denied, not
+    silently tracked over the first one
+  - the SIP password still never reaches the on-disk JSON config, a log
+    line, or an exception message shown to the user
 - If validation cannot be completed, state exactly what was not run and why.
 
 ## Versioning Phase

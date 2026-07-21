@@ -25,6 +25,10 @@ with noisy comments.
    - background-thread GUI coordination
    - PowerShell or `netsh` parsing
    - Phone Link runtime-state parsing and calls-entry detection
+   - SIP/VoIP call signaling, state watching, and the audio-bridge threading
+     in `applecalls/voip.py` (why a fresh `threading.Event` per call, why a
+     second incoming call is denied instead of tracked, why firewall setup
+     and `phone.start()`/`phone.stop()` must never run on the Tk thread)
    - validation and version-sync decisions
    - build/version synchronization
 6. Preserve behavior first. If the comment reveals unclear logic, fix the code

@@ -169,6 +169,61 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Phone Link no parece instalado. Instalala primero desde Microsoft "
             "Store."
         ),
+        "voip_section_title": "Telefono SIP (independiente)",
+        "voip_section_intro": (
+            "Alternativa independiente a Phone Link: registra una cuenta SIP/VoIP "
+            "real (por ejemplo, con desvio de llamadas desde tu iPhone) y haz o "
+            "recibe llamadas directamente desde Windows por el estandar SIP, sin "
+            "Bluetooth y sin depender de Microsoft ni de Apple."
+        ),
+        "voip_field_server": "Servidor SIP",
+        "voip_field_port": "Puerto del servidor",
+        "voip_field_username": "Usuario",
+        "voip_field_password": "Contrasena",
+        "voip_field_display_number": "Numero a mostrar",
+        "voip_save_connect": "Guardar y conectar",
+        "voip_disconnect": "Desconectar",
+        "voip_connect_missing_fields": (
+            "Completa al menos servidor, usuario y contrasena antes de conectar."
+        ),
+        "voip_status_label": "Estado del registro SIP",
+        "voip_status_inactive": "Sin conexion",
+        "voip_status_registering": "Registrando cuenta SIP...",
+        "voip_status_registered": "Cuenta SIP registrada",
+        "voip_status_deregistering": "Cerrando el registro SIP...",
+        "voip_status_failed": "El registro SIP fallo",
+        "voip_call_state_label": "Llamada",
+        "voip_call_state_idle": "Sin llamada activa",
+        "voip_call_state_dialing": "Marcando...",
+        "voip_call_state_ringing": "Timbrando",
+        "voip_call_state_answered": "En llamada",
+        "voip_call_state_ended": "Llamada finalizada",
+        "voip_dial_label": "Numero a llamar",
+        "voip_call_button": "Llamar",
+        "voip_hangup_button": "Colgar",
+        "voip_active_call_label": "Llamada activa",
+        "voip_call_duration_label": "Duracion",
+        "voip_incoming_call_title": "Llamada entrante",
+        "voip_incoming_call_from": "Numero entrante",
+        "voip_answer": "Contestar",
+        "voip_decline": "Rechazar",
+        "voip_no_dtmf_note": (
+            "Esta version solo puede recibir tonos DTMF, no enviarlos durante la "
+            "llamada. El teclado numerico sirve para componer el numero antes de "
+            "llamar, no como teclado de tonos en vivo."
+        ),
+        "voip_error_title": "Telefono SIP",
+        "voip_error_not_connected": "Conecta la cuenta SIP antes de marcar.",
+        "voip_password_store_failed": (
+            "No se pudo guardar la contrasena en el almacen seguro de Windows. "
+            "La conexion puede continuar, pero tendras que escribirla de nuevo la "
+            "proxima vez."
+        ),
+        "voip_credential_store_unavailable": (
+            "El almacen de credenciales de Windows no esta disponible en este "
+            "equipo."
+        ),
+        "voip_saved_notice": "Datos de la cuenta SIP guardados.",
     },
     "en": {
         "app_title": "AppleCalls",
@@ -333,6 +388,60 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Phone Link does not appear to be installed. Install it from the "
             "Microsoft Store first."
         ),
+        "voip_section_title": "SIP phone (independent)",
+        "voip_section_intro": (
+            "An independent alternative to Phone Link: register a real SIP/VoIP "
+            "account (for example, with call forwarding from your iPhone) and make "
+            "or receive calls straight from Windows over the SIP standard, with no "
+            "Bluetooth and no dependency on Microsoft or Apple."
+        ),
+        "voip_field_server": "SIP server",
+        "voip_field_port": "Server port",
+        "voip_field_username": "Username",
+        "voip_field_password": "Password",
+        "voip_field_display_number": "Display number",
+        "voip_save_connect": "Save and connect",
+        "voip_disconnect": "Disconnect",
+        "voip_connect_missing_fields": (
+            "Fill in at least the server, username, and password before connecting."
+        ),
+        "voip_status_label": "SIP registration status",
+        "voip_status_inactive": "Not connected",
+        "voip_status_registering": "Registering the SIP account...",
+        "voip_status_registered": "SIP account registered",
+        "voip_status_deregistering": "Closing the SIP registration...",
+        "voip_status_failed": "SIP registration failed",
+        "voip_call_state_label": "Call",
+        "voip_call_state_idle": "No active call",
+        "voip_call_state_dialing": "Dialing...",
+        "voip_call_state_ringing": "Ringing",
+        "voip_call_state_answered": "On call",
+        "voip_call_state_ended": "Call ended",
+        "voip_dial_label": "Number to call",
+        "voip_call_button": "Call",
+        "voip_hangup_button": "Hang up",
+        "voip_active_call_label": "Active call",
+        "voip_call_duration_label": "Duration",
+        "voip_incoming_call_title": "Incoming call",
+        "voip_incoming_call_from": "Incoming number",
+        "voip_answer": "Answer",
+        "voip_decline": "Decline",
+        "voip_no_dtmf_note": (
+            "This version can only receive DTMF tones, not send them during a "
+            "call. The number pad is for composing the number before you call, "
+            "not a live in-call touch-tone keypad."
+        ),
+        "voip_error_title": "SIP phone",
+        "voip_error_not_connected": "Connect the SIP account before dialing.",
+        "voip_password_store_failed": (
+            "The password could not be saved to the Windows secure credential "
+            "store. The connection can still proceed, but you will need to type "
+            "it again next time."
+        ),
+        "voip_credential_store_unavailable": (
+            "The Windows credential store is not available on this machine."
+        ),
+        "voip_saved_notice": "SIP account details saved.",
     },
 }
 

@@ -1,25 +1,60 @@
 # AppleCalls
 
 AppleCalls es una utilidad de escritorio en Python para Windows que responde una
-pregunta concreta: `esta PC puede usar las llamadas de mi iPhone por la ruta
-soportada, o no?`
+pregunta concreta: `esta PC puede usar las llamadas de mi iPhone, y puede hacerlo
+sin depender de Microsoft Phone Link?`
 
-Version actual: `V0.2.4`
+Version actual: `V0.3.0`
 
 ## Resumen
 
-AppleCalls no intenta clonar la funcion privada de `Continuity` de macOS.
-Apple mantiene ese relay de llamadas dentro de su propio ecosistema. En Windows,
-la ruta practica y soportada es `Microsoft Phone Link` + `Bluetooth`.
+AppleCalls no intenta clonar la funcion privada de `Continuity` de macOS: se
+investigo a fondo (ver [docs/spec-driven-development.md](docs/spec-driven-development.md))
+y se confirmo que no es viable para un tercero, porque la senalizacion de
+Continuity Calls depende de la infraestructura de push privada de Apple
+(APNs/IDS), autenticada con Apple ID. Tampoco depende de `Microsoft Phone
+Link`: se probo en hardware real que Windows reserva para su propio uso tanto
+el canal Bluetooth Hands-Free como el canal BLE ANCS, sin exponerlos a
+aplicaciones de terceros.
+
+El camino real e independiente que SI es viable es un softphone SIP/VoIP
+(RFC 3261 + RTP/G.711) estandar: el usuario desvia su numero real de iPhone a
+un numero VoIP/SIP (por su operador o un proveedor VoIP de su eleccion), y
+AppleCalls se registra directamente contra esa cuenta SIP para recibir y
+hacer llamadas desde la PC, sin Bluetooth, sin Phone Link y sin infraestructura
+de Apple involucrada.
 
 El programa existe para:
 
+- ofrecer un softphone SIP real e independiente para recibir y hacer llamadas
+  desde la PC (cuenta SIP propia, sin Phone Link)
 - inspeccionar el estado real de Windows, Bluetooth, red local y Phone Link
-- decir con claridad si la ruta soportada esta lista, incompleta o bloqueada
+  (diagnostico heredado, sigue disponible para quien todavia use esa ruta)
+- decir con claridad si la ruta soportada por Phone Link esta lista, incompleta
+  o bloqueada
 - abrir Phone Link y, cuando existe, su vista de `Llamadas`
 - ayudar a corregir instalaciones o asociaciones rotas sin congelar la GUI
 
 ## Que hace el programa
+
+### Softphone SIP/VoIP (independiente de Phone Link)
+
+- Se registra contra cualquier cuenta SIP/VoIP estandar (servidor, puerto,
+  usuario, contrasena, numero visible).
+- Guarda la configuracion de cuenta en disco (sin la contrasena) y la
+  contrasena por separado en el Administrador de credenciales de Windows via
+  `keyring` -- nunca en texto plano.
+- Muestra el estado de registro (`Registrando`, `Registrado`, `Fallo`, etc.).
+- Avisa una llamada entrante con el numero del remitente, y permite
+  contestar o rechazar.
+- Permite marcar y colgar llamadas salientes.
+- Puentea audio real (microfono/altavoces) usando G.711 (PCMU/PCMA) a 8kHz.
+- Abre reglas de Firewall de Windows en modo silencioso para el puerto SIP y
+  el rango RTP usado.
+- Limitacion conocida: la libreria SIP usada solo puede *recibir* tonos DTMF,
+  no enviarlos durante una llamada (sin teclado numerico en vivo).
+
+### Diagnostico de Phone Link (funcion heredada, sigue disponible)
 
 - Detecta version de Windows, build y version de Python.
 - Revisa si `Microsoft Phone Link` esta instalado.
@@ -39,25 +74,32 @@ El programa existe para:
 
 ## Que no hace
 
-- No implementa el relay privado de llamadas de Apple para Windows.
-- No reemplaza Phone Link con una pila propia de telefonia.
-- No convierte por si solo una red Wi-Fi compartida en equivalente de una Mac.
+- No implementa el relay privado de `Continuity Calls` de Apple (requiere
+  credenciales de Apple ID que un tercero no puede emitir; investigado y
+  descartado, ver SDD).
+- No usa ni requiere Microsoft Phone Link para el softphone SIP -- Phone Link
+  queda como funcion de diagnostico heredada e independiente.
+- No envia tonos DTMF durante una llamada activa (limitacion de la libreria
+  SIP usada).
 
 ## Requisitos
 
 - Windows 10 May 2019 Update o superior
 - Python 3.12 o compatible
-- iPhone con iOS 15 o superior para la ruta de Phone Link
-- Bluetooth funcional en la PC
+- Para el softphone SIP: una cuenta SIP/VoIP propia y, para recibir las
+  llamadas del iPhone en ella, desvio de llamadas configurado con tu operador
+- Para el diagnostico heredado de Phone Link: iPhone con iOS 15 o superior y
+  Bluetooth funcional en la PC
 
 ## Dependencias
 
-En tiempo de ejecucion, la app usa solo la libreria estandar de Python.
+El softphone SIP necesita tres dependencias de tiempo de ejecucion (protocolo
+SIP/RTP, audio y almacenamiento seguro de credenciales); el resto de la app
+sigue usando solo la libreria estandar de Python. El detalle completo,
+incluyendo el porque de cada una, esta en
+[docs/dependencies.md](docs/dependencies.md).
 
-Para build y automatizacion se usan dependencias declaradas en `requirements.txt`.
-El detalle completo esta en [docs/dependencies.md](docs/dependencies.md).
-
-Instalacion de dependencias de build:
+Instalacion de dependencias (runtime + build):
 
 ```powershell
 python -m pip install -r requirements.txt
@@ -93,7 +135,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build_exe.ps1
 
 Resultado esperado:
 
-- `AppleCalls-V0.2.4.exe` en la carpeta raiz del proyecto
+- `AppleCalls-V0.3.0.exe` en la carpeta raiz del proyecto
 
 ## Estructura del proyecto
 
@@ -106,6 +148,8 @@ applecalls/
   diagnostics.py
   i18n.py
   logic.py
+  process_utils.py
+  voip.py
 docs/
   agents.md
   dependencies.md
@@ -115,7 +159,9 @@ scripts/
 tests/
   test_diagnostics.py
   test_logic.py
+  test_process_utils.py
   test_report_format.py
+  test_voip.py
 .github/
   dependabot.yml
   pull_request_template.md
