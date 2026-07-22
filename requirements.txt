@@ -6,4 +6,4 @@ pyyaml>=6.0,<7
 # docs/dependencies.md for the rationale behind each one).
 pyVoIP>=1.6.8,<2
 sounddevice>=0.5,<1
-keyring>=25,<26
+keyring>=25.7.0,<26
